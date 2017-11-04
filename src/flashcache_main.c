@@ -882,6 +882,10 @@ flashcache_md_write_done(struct kcached_job *job)
 					      job->error, cacheblk->dbn);
 				}
 				spin_unlock_irq(&cache_set->set_spin_lock);
+				if(NULL != job->bio && FLASHCACHE_WRITE_BACK == dmc->cache_mode){
+					job->bio = NULL;
+					DMERR("flashcache: WRITE: jon->bio != NULL, set bio to NULL");
+				}
 				flashcache_do_pending(job);
 			} else {
 				cacheblk->cache_state &= ~BLOCK_IO_INPROG;
