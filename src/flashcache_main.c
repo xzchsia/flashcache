@@ -2092,6 +2092,15 @@ flashcache_map(struct dm_target *ti, struct bio *bio)
 	int queued;
 	int uncacheable;
 	unsigned long flags;
+
+	/*
+	* ensure there is no io request go through when the cachedev has beed removed
+	*/
+	if(NULL == dmc || atomic_read(&dmc->remove_in_prog))
+	{
+		DMERR("flashcache_map cachedev has been removed, drop new request io\n");
+		return -ENODEV;
+	}
 	
 	if (sectors <= 32)
 		size_hist[sectors]++;
